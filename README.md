@@ -1,4 +1,4 @@
-# Fetch-Once
+# Fetch-Once [![Circle CI](https://circleci.com/gh/AlexMeah/fetch-once/tree/master.svg?style=svg)](https://circleci.com/gh/AlexMeah/fetch-once/tree/master)
 
 Ensure requests are only made once no matter how many times your application calls them
 
