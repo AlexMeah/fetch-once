@@ -164,4 +164,62 @@ describe('Data module - getData', function () {
             }
         }).catch(done);
     });
+
+    it('should cache by default', function (done) {
+        nock('http://this.is')
+            .get('/a/success')
+            .times(1)
+            .reply(200, 'success...');
+
+        fetchOnce(singleton, {
+            url: 'http://this.is/a/success'
+        }).then(function () {
+            return fetchOnce(singleton, {
+                url: 'http://this.is/a/success'
+            }).then(function () {
+                singleton['http://this.is/a/success'].should.not.equal(false);
+                done();
+            });
+        }).catch(done);
+    });
+
+    it('should cache for length of cache integer in ms', function (done) {
+        nock('http://this.is')
+            .get('/a/success')
+            .times(1)
+            .reply(200, 'success...');
+
+        fetchOnce(singleton, {
+            url: 'http://this.is/a/success',
+            cache: 20
+        }).then(function () {
+            return fetchOnce(singleton, {
+                url: 'http://this.is/a/success'
+            }).then(function () {
+                setTimeout(function () {
+                    singleton['http://this.is/a/success'].should.equal(false);
+                    done();
+                }, 30);
+            });
+        }).catch(done);
+    });
+
+    it('should not cache if cache is false', function (done) {
+        nock('http://this.is')
+            .get('/a/success')
+            .times(1)
+            .reply(200, 'success...');
+
+        fetchOnce(singleton, {
+            url: 'http://this.is/a/success',
+            cache: false
+        }).then(function () {
+            return fetchOnce(singleton, {
+                url: 'http://this.is/a/success'
+            }).catch(function (err) {
+                err.message.should.equal('Nock: No match for request GET http://this.is/a/success ');
+                done();
+            });
+        }).catch(done);
+    });
 });

@@ -1,18 +1,30 @@
 # Fetch-Once [![Circle CI](https://circleci.com/gh/AlexMeah/fetch-once/tree/master.svg?style=svg)](https://circleci.com/gh/AlexMeah/fetch-once/tree/master)
 
-Ensure requests are only made once no matter how many times your application calls them
+Ensure requests are only made once no matter how many times your application calls them, support custom cache lengths.
+
+### options
+
+- Supports all request options
+
+
+```js
+{
+    cache: true|false|int, // default: true
+    successHandler: fn // For heavy processing of response only performed once
+}
+```
 
 ### Example usage
 
 ```js
 
 // pendingRequests (singleton)
-var pendingRequests = {};
+var requests = {};
 
 // Component1.js
 var fetchOnce = require('fetch-once');
 
-fetchOnce(pendingRequests, {
+fetchOnce(requests, {
     url: 'http://google.com'
 }).then(function (data) {
     // use data in render
@@ -21,7 +33,7 @@ fetchOnce(pendingRequests, {
 // Component2.js
 var fetchOnce = require('fetch-once');
 
-fetchOnce(pendingRequests, {
+fetchOnce(requests, {
     url: 'http://google.com'
 }).then(function (data) {
     // use data in render
