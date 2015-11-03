@@ -40,9 +40,9 @@
     "travis-cov": "^0.2.5"
   },
   "dependencies": {
-    "bluebird": "^2.9.25",
     "isnumber": "^1.0.0",
     "object-assign": "^3.0.0",
+    "promise": "^7.0.4",
     "request": "^2.55.0"
   }
 }

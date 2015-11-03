@@ -1,7 +1,7 @@
 var proxyquire = require('proxyquire').noCallThru();
 var nock = require('nock');
 require('chai').should();
-var Promise = require('bluebird');
+var PPromise = require('promise');
 
 describe('Data module - getData', function () {
     var fetchOnce = require('../lib');
@@ -39,14 +39,17 @@ describe('Data module - getData', function () {
             .times(1)
             .reply(200, 'all about how...');
 
-        Promise.all([
+        PPromise.all([
             fetchOnce(singleton, {
                 url: 'http://this.is/a/test'
             }),
             fetchOnce(singleton, {
                 url: 'http://this.is/a/test'
             })
-        ]).spread(function (req1, req2) {
+        ]).then(function (data) {
+            var req1 = data[0];
+            var req2 = data[1];
+
             req1.should.equal('all about how...');
             req2.should.equal('all about how...');
 
