@@ -1,7 +1,8 @@
 var proxyquire = require('proxyquire').noCallThru();
 var nock = require('nock');
 require('chai').should();
-var PPromise = require('promise');
+
+require('es6-promise').polyfill();
 
 describe('Data module - getData', function () {
     var fetchOnce = require('../lib');
@@ -39,7 +40,7 @@ describe('Data module - getData', function () {
             .times(1)
             .reply(200, 'all about how...');
 
-        PPromise.all([
+        Promise.all([
             fetchOnce(singleton, {
                 url: 'http://this.is/a/test'
             }),
@@ -64,15 +65,15 @@ describe('Data module - getData', function () {
             .reply(500, 'never...');
 
         fetchOnce(singleton, {
-                url: 'http://this.is/a/fail',
-                successHandler: function (response, result) {
-                    response.statusCode.should.equal(500);
-                    result.should.equal('never...');
+            url: 'http://this.is/a/fail',
+            successHandler: function (resp) {
+                resp.status.should.equal(500);
+                resp.data.should.equal('never...');
 
-                    done();
-                }
-            })
-            .catch(done);
+                done();
+            }
+        })
+        .catch(done);
     });
 
     it('should add resp status helpers', function (done) {
@@ -82,17 +83,17 @@ describe('Data module - getData', function () {
             .reply(200, 'never...');
 
         fetchOnce(singleton, {
-                url: 'http://this.is/a/success',
-                successHandler: function (resp) {
-                    resp.success.should.equal(true);
-                    resp.failed.should.equal(false);
-                    resp.clientError.should.equal(false);
-                    resp.serverError.should.equal(false);
+            url: 'http://this.is/a/success',
+            successHandler: function (resp) {
+                resp.success.should.equal(true);
+                resp.failed.should.equal(false);
+                resp.clientError.should.equal(false);
+                resp.serverError.should.equal(false);
 
-                    done();
-                }
-            })
-            .catch(done);
+                done();
+            }
+        })
+        .catch(done);
     });
 
     it('should honour a successHandler function passed in', function (done) {
@@ -119,8 +120,8 @@ describe('Data module - getData', function () {
             .reply(200, 'never...');
 
         var _fetchOnce = proxyquire('../lib', {
-            request: function (options, cb) {
-                cb(new Error('fail'));
+            axios: function () {
+                return Promise.reject(new Error('fail'));
             }
         });
 
@@ -132,39 +133,6 @@ describe('Data module - getData', function () {
         }).then(function (data) {
             data.should.equal('HELLO');
             done();
-        }).catch(done);
-    });
-
-    it('should add the url to the error message for the error is a ETIMEDOUT or ECONNRESET', function (done) {
-        nock('http://this.is')
-            .get('/a/timeout')
-            .delayConnection(2000)
-            .times(1)
-            .reply(200, 'timeout...');
-
-        fetchOnce(singleton, {
-            url: 'http://this.is/a/timeout',
-            timeout: 1
-        }).catch(function (err) {
-            err.message.should.contain('http://this.is/a/timeout');
-            done();
-        }).catch(done);
-    });
-
-    it('should add the url to the error message even if the user passes a custom errorHandler', function (done) {
-        nock('http://this.is')
-            .get('/a/timeout')
-            .delayConnection(2000)
-            .times(1)
-            .reply(200, 'timeout...');
-
-        fetchOnce(singleton, {
-            url: 'http://this.is/a/timeout',
-            timeout: 1,
-            errorHandler: function (err) {
-                err.message.should.contain('http://this.is/a/timeout');
-                done();
-            }
         }).catch(done);
     });
 
@@ -220,7 +188,7 @@ describe('Data module - getData', function () {
             return fetchOnce(singleton, {
                 url: 'http://this.is/a/success'
             }).catch(function (err) {
-                err.message.should.equal('Nock: No match for request GET http://this.is/a/success ');
+                err.message.should.equal('Nock: No match for request get http://this.is/a/success ');
                 done();
             });
         }).catch(done);

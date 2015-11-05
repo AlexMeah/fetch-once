@@ -36,6 +36,7 @@
         "sinon": true,
         "google": true,
         "wNumb": true,
-        "Image": true
+        "Image": true,
+        "Promise": true
     }
 }
