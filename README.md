@@ -1,5 +1,7 @@
 # Fetch-Once [![Circle CI](https://circleci.com/gh/AlexMeah/fetch-once/tree/master.svg?style=svg)](https://circleci.com/gh/AlexMeah/fetch-once/tree/master)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/AlexMeah/fetch-once.svg)](https://greenkeeper.io/)
+
 Ensure requests are only made once no matter how many times your application calls them, support custom cache lengths.
 
 ### options
